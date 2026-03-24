@@ -48,7 +48,7 @@ mov es,ax
 mov ss,ax
 mov esp,0x90000
 
-jmp 0x1000
+jmp 0x08:0x1000
 
 gdt_start:
 dq 0
