@@ -1,3 +1,9 @@
+void kernel_main();
+
+void _start()
+{
+    kernel_main();
+}
 #define FB 0xA0000
 #define W 320
 #define H 200
