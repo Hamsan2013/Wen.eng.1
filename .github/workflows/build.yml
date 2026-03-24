@@ -1,0 +1,51 @@
+name: Build Wendigo OS
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install tools
+      run: |
+        sudo apt update
+        sudo apt install nasm gcc-multilib qemu-system-x86 -y
+
+    - name: Assemble bootloader
+      run: nasm -f bin boot.asm -o boot.bin
+
+    - name: Compile kernel
+      run: |
+        gcc -m32 -ffreestanding -c kernel.c
+        gcc -m32 -ffreestanding -c desktop.c
+        gcc -m32 -ffreestanding -c mouse.c
+        gcc -m32 -ffreestanding -c hmg_loader.c
+        gcc -m32 -ffreestanding -c http.c
+
+    - name: Link kernel
+      run: |
+        ld -m elf_i386 -Ttext 0x1000 \
+        kernel.o desktop.o mouse.o hmg_loader.o http.o \
+        -o kernel.elf
+
+    - name: Create binary
+      run: objcopy -O binary kernel.elf kernel.bin
+
+    - name: Create disk image
+      run: |
+        dd if=/dev/zero of=wendigo.img bs=512 count=2880
+        dd if=boot.bin of=wendigo.img conv=notrunc
+        dd if=kernel.bin of=wendigo.img bs=512 seek=1 conv=notrunc
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: wendigo-os
+        path: wendigo.img
