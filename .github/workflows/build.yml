@@ -30,10 +30,10 @@ jobs:
         gcc -m32 -ffreestanding -c http.c
 
     - name: Link kernel
-      run: |
-        ld -m elf_i386 -Ttext 0x1000 \
-        kernel.o desktop.o mouse.o hmg_loader.o http.o \
-        -o kernel.elf
+  run: |
+    ld -m elf_i386 -Ttext 0x1000 -e _start \
+    kernel.o desktop.o mouse.o hmg_loader.o http.o \
+    -o kernel.elf
 
     - name: Create binary
       run: objcopy -O binary kernel.elf kernel.bin
