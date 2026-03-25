@@ -22,15 +22,11 @@ jobs:
 
       - name: Compile kernel
         run: |
-          gcc -m32 -ffreestanding -c kernel.c
-          gcc -m32 -ffreestanding -c desktop.c
-          gcc -m32 -ffreestanding -c mouse.c
-          gcc -m32 -ffreestanding -c hmg_loader.c
-          gcc -m32 -ffreestanding -c http.c
+         gcc -m32 -ffreestanding -c kernel.c
 
       - name: Link kernel
         run: |
-          ld -m elf_i386 -Ttext 0x1000 -e _start kernel.o desktop.o mouse.o hmg_loader.o http.o -o kernel.elf
+         ld -m elf_i386 -Ttext 0x1000 -e _start kernel.o -o kernel.elf
 
       - name: Convert to binary
         run: objcopy -O binary kernel.elf kernel.bin
